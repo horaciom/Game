@@ -2,16 +2,11 @@ var Enemy = function (game, posX, posY,img,type,orientation){
 	this.type = 0;
 	this.constructor(game, posX, posY,img,type,orientation);
 
-
-	this.enemyOrientation;
-	this.arrayOfColide = [];
-
-
 	this.intervalMove = 1000;
 	this.lastMove = new Date().getTime();
 	this.started = false;
 
-	this.test = function(){
+	this.autoMove = function(){
 		if(!this.started){
 		    var dateTime = new Date().getTime();
 
@@ -21,7 +16,6 @@ var Enemy = function (game, posX, posY,img,type,orientation){
 		    }
 		    this.lastMove = dateTime;
 		    this.started = true;
-	    	console.log("start move enemy");
 	    	this.orientation = this.randomOrientation();
 			this.setOrientation(this.orientation);
 			this.setVelocityByOrientation();
@@ -43,10 +37,6 @@ var Enemy = function (game, posX, posY,img,type,orientation){
 				return;
 			}
 		}
-
-		
-		
-
 
 	}
 
@@ -78,18 +68,10 @@ var Enemy = function (game, posX, posY,img,type,orientation){
 				}
 			}
 		}
-
 		return orientation;
-
-		//this.setOrientation(orientation);
-	}
-
-	this.setNewOrientation = function (orientation){
-		this.arrayOfColide[orientation] = orientation;
 	}
 
 	this.setVelocityByOrientation = function(){
-
 		if(!this.colide){
 
 			if(this.orientation === "right" || this.orientation === "left"  ){
@@ -97,17 +79,9 @@ var Enemy = function (game, posX, posY,img,type,orientation){
 			}else if(this.orientation === "top" || this.orientation === "bottom"  ){
 				this.setVelocityVertical(this.velocityOfmoving);
 			}
-
 			this.setOrientation(this.orientation);
-			
-
 		}
 	}
 
-	
-	
-/*	this.enemyOrientation = this.randomOrientation();
-	this.setOrientation(this.enemyOrientation);
-	this.setVelocityByOrientation();*/
 }
 Enemy.prototype = new Tank();

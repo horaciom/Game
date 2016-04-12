@@ -28,10 +28,10 @@ var Juego = function() {
   this.debugC;
   this.debugD;
 
-  this.tank;
+  this.player;
   this.map;
   this.enemies = [];
-  this.enemyCant = 10;
+  this.enemyCant = 5;
 
   this.pressKeyLeft = false;
   this.pressKeyRight= false;
@@ -54,10 +54,9 @@ var Juego = function() {
   this.initEntities = function()
   {
     this.map = new Map();
-    this.tank = new Tank();
-  //  this.enemies.push(new Enemy(this,10, 10,'./assets/sprites/redtank.png',2,'bottom'));
+    this.player = new Player(this,300,600,'./assets/sprites/playertank.png',1,'top');
 
-    this.tank.constructor(this,300,600,'./assets/sprites/playertank.png',1,'top');
+
     this.map.constructor(this,'map-01.json');
 
     var mkEnemies = function(){
@@ -78,11 +77,10 @@ var Juego = function() {
         this.arrayOfEntities.push(enemy);
         this.enemyCant--;
       }else {
-        console.log(makeEnemies);
         clearInterval(makeEnemies);
       }
     };
-    var makeEnemies = setInterval(mkEnemies.bind(this), 3500);
+    var makeEnemies = setInterval(mkEnemies.bind(this), 6500);
     setTimeout(mkEnemies.bind(this),100);
 
     var tiles = this.map.arrTiles;
@@ -91,7 +89,7 @@ var Juego = function() {
       this.arrayOfEntities.push(tiles[i]);
     }
 
-    this.arrayOfEntities.push(this.tank);
+    this.arrayOfEntities.push(this.player);
 
   }
 
@@ -119,7 +117,6 @@ var Juego = function() {
         }
       }
     }
-    //console.log();
     return false;
   }
 
@@ -159,46 +156,10 @@ var Juego = function() {
       }
     }
 
-    this.tank.setVelocityHorizontal(0);
-    this.tank.setVelocityVertical(0);
-    
-    if(!this.pressKeyLeft && !this.pressKeyRight && !this.pressKeyDown && this.pressKeyTop)
-    {
-      this.tank.setOrientation('top');
-      if(!this.checkCollisionWithTile(this.tank))
-      {
-        this.tank.setVelocityVertical(-this.tank.velocityOfmoving);
-      }
-    }else if(!this.pressKeyLeft && !this.pressKeyRight && !this.pressKeyTop && this.pressKeyDown)
-    {
-      this.tank.setOrientation('bottom');
-      if(!this.checkCollisionWithTile(this.tank))
-      {
-        this.tank.setVelocityVertical(this.tank.velocityOfmoving);
-      }
-    }else if(this.pressKeyLeft && !this.pressKeyRight && !this.pressKeyTop && !this.pressKeyDown)
-    {
-      this.tank.setOrientation('left');
-      if(!this.checkCollisionWithTile(this.tank))
-      {
-        this.tank.setVelocityHorizontal(-this.tank.velocityOfmoving);
-      }
-    }else if(!this.pressKeyLeft && !this.pressKeyTop && !this.pressKeyDown && this.pressKeyRight)
-    {
-      this.tank.setOrientation('right');
-      if(!this.checkCollisionWithTile(this.tank))
-      {
-        this.tank.setVelocityHorizontal(this.tank.velocityOfmoving);
-      }
-    }
-
-    if(this.pressKeySpace)
-    {
-      this.tank.tryShoot();
-    }
+    this.player.keyPadEvents();
 
     for(var i = 0; i < this.enemies.length; ++i){
-      this.enemies[i].test();
+      this.enemies[i].autoMove();
     }
 
     this.deleteEntitiesFromGame();
