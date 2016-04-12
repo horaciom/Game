@@ -4,11 +4,12 @@ var Tank = function(){
 	this.height = 32;
 	this.sprite;
 	this.img;
-	this.velocityOfmoving = 0.09;
+	this.velocityOfmoving = 0.08;
 	this.spriteObj;
 	this.selfByOrientation;
 	this.intervalShoot = 500;
 	this.lastShoot;
+	this.colide = false;
 	
 
 
@@ -35,6 +36,8 @@ var Tank = function(){
 			height:h
 		}
 	}
+
+	
 
 	this.spritePosByOrientation = function(){
 		return {
@@ -114,20 +117,6 @@ var Tank = function(){
 	}
 
 	this.collision = function(other){
-
-		if(this.dy < 0 && this.y < 1) {
-			return true;
-		}
-		if(this.dx < 0 && this.x < 1) {
-			return true;
-		}
-		if(this.dx > 0 && this.x > this.game.canvas.width - (this.width+2) ) {
-			return true;
-		}
-		if(this.dy > 0 && this.y > this.game.canvas.height - (this.height+2) ) {
-			return true;
-		}
-		
 		return this.entityCollision(this.selfByOrientation,other);
 	}
 
@@ -141,6 +130,24 @@ var Tank = function(){
 
 	this.move = function(delta){
 
+		if(this.dy < 0 && this.y < 1) {
+			this.colide = true;
+			return this.colide;
+		}
+		if(this.dx < 0 && this.x < 1) {
+			this.colide = true;
+			return this.colide;
+		}
+		if(this.dx > 0 && this.x > this.game.canvas.width - (this.width+2) ) {
+			this.colide = true;
+			return this.colide;
+		}
+		if(this.dy > 0 && this.y > this.game.canvas.height - (this.height+2) ) {
+			this.colide = true;
+			return this.colide;
+		}
+
+		
 		
 		this.entityMove(delta);
 	}

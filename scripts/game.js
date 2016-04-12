@@ -5,6 +5,8 @@ var Juego = function() {
   this.fpsDisplay;
 
 
+
+
   this.lastFrameTimeMs = 0;
   this.maxFPS = 60;
   this.delta = 0;
@@ -16,6 +18,7 @@ var Juego = function() {
   this.started = false;
   this.frameID = 0;
 
+  this.newGame = false;
   this.endGame = false;
 
   this.arrayOfEntities = [];
@@ -27,7 +30,8 @@ var Juego = function() {
 
   this.tank;
   this.map;
-  this.enemy;
+  this.enemies = [];
+  this.enemyCant = 10;
 
   this.pressKeyLeft = false;
   this.pressKeyRight= false;
@@ -44,32 +48,52 @@ var Juego = function() {
     this.ctx = this.canvas.getContext("2d");
 
     this.fpsDisplay = $("#"+fpsDisplayId);
-    this.initEntities();
+   
   }
 
   this.initEntities = function()
   {
     this.map = new Map();
     this.tank = new Tank();
+  //  this.enemies.push(new Enemy(this,10, 10,'./assets/sprites/redtank.png',2,'bottom'));
+
     this.tank.constructor(this,300,600,'./assets/sprites/playertank.png',1,'top');
     this.map.constructor(this,'map-01.json');
-    this.enemy = new Enemy(this,10, 10,'./assets/sprites/redtank.png',2,'bottom');
 
-   
+    var mkEnemies = function(){
+      if(this.enemyCant > 0){
+        var pos = [[10,10],[302,10],[740,10]];
+        var rand = Math.round(Math.random()*3);
+        var x = pos[0][0];
+        var y = pos[0][1];
+        if(pos[rand] && pos[rand][0]){
+          x = pos[rand][0];
+        }
+        if(pos[rand] && pos[rand][1]){
+          y = pos[rand][1];
+        }
 
-
-    this.arrayOfEntities.push(this.tank);
-    this.arrayOfEntities.push(this.enemy);
+        var enemy = new Enemy(this, x, y,'./assets/sprites/redtank.png',2,'bottom');
+        this.enemies.push(enemy);
+        this.arrayOfEntities.push(enemy);
+        this.enemyCant--;
+      }else {
+        console.log(makeEnemies);
+        clearInterval(makeEnemies);
+      }
+    };
+    var makeEnemies = setInterval(mkEnemies.bind(this), 3500);
+    setTimeout(mkEnemies.bind(this),100);
 
     var tiles = this.map.arrTiles;
-    for(var i=0;i < tiles.length; i++)
+    for(var i=0;i < tiles.length; ++i)
     {
       this.arrayOfEntities.push(tiles[i]);
     }
-    
-  }
 
- 
+    this.arrayOfEntities.push(this.tank);
+
+  }
 
   this.getEntitiesByType = function(type){
       function filterByType(value,type) {
@@ -82,19 +106,21 @@ var Juego = function() {
   }
 
   this.checkCollisionWithTile = function(entity) {
-    // console.log(entity);
+
     var tiles = this.getEntitiesByType(0);
-    for(var i=0;i < tiles.length; i++)
+    for(var i=0;i < tiles.length; ++i)
     {
       if(!tiles[i].allowWalk)
       {
         if(entity.collision(tiles[i]))
         {
+
           return tiles[i];
         }
       }
     }
-    return;
+    //console.log();
+    return false;
   }
 
   this.endGame = function (){
@@ -108,10 +134,10 @@ var Juego = function() {
   {
     var m=this.entitiesToDelete.length;
     if(m > 0){
-      for(var i=0;i<m;i++)
+      for(var i=0;i<m;++i)
       {
         var n=this.arrayOfEntities.length;
-        for(var j=0;j<n;j++)
+        for(var j=0;j<n;++j)
         {
           if(this.entitiesToDelete[i]==this.arrayOfEntities[j])
           {
@@ -126,7 +152,7 @@ var Juego = function() {
   }
 
   this.update = function(delta) {
-    for(var i = 0; i < this.arrayOfEntities.length; i++) {
+    for(var i = 0; i < this.arrayOfEntities.length; ++i) {
       if(typeof this.arrayOfEntities[i].move == 'function')
       {
         this.arrayOfEntities[i].move(delta);
@@ -136,11 +162,6 @@ var Juego = function() {
     this.tank.setVelocityHorizontal(0);
     this.tank.setVelocityVertical(0);
     
-    // if(this.checkCollisionWithTile(this.enemy)){
-    //   console.log(this.checkCollisionWithTile(this.enemy) );
-    //   this.enemy.autoMove();
-    // }
-
     if(!this.pressKeyLeft && !this.pressKeyRight && !this.pressKeyDown && this.pressKeyTop)
     {
       this.tank.setOrientation('top');
@@ -176,11 +197,15 @@ var Juego = function() {
       this.tank.tryShoot();
     }
 
+    for(var i = 0; i < this.enemies.length; ++i){
+      this.enemies[i].test();
+    }
+
     this.deleteEntitiesFromGame();
   }
 
-  this.draw = function(interp) {
-    for(var i = 0;  i < this.arrayOfEntities.length; i++) {
+  this.draw = function() {
+    for(var i = 0;  i < this.arrayOfEntities.length; ++i) {
       this.arrayOfEntities[i].draw(this.ctx);
     }
     this.fpsDisplay.html( Math.round(this.fps) + ' FPS');
@@ -194,14 +219,17 @@ var Juego = function() {
     this.running = false;
     this.started = false;
     cancelAnimationFrame(this.frameID);
-  
   }
 
   this.start = function() {
+    if(!this.newGame){
+      this.initEntities();
+    }
     if(!this.started) {
       this.started = true;
+      this.newGame = true;
       this.frameID = requestAnimationFrame(function(timestamp) {
-        this.draw(1);
+        this.draw();
         this.running = true;
         this.lastFrameTimeMs = timestamp;
         this.lastFpsUpdate = timestamp;
@@ -239,9 +267,7 @@ var Juego = function() {
     }
     this.draw(this.delta / this.timestep);
     this.frameID = requestAnimationFrame(this.mainLoop.bind(this)); 
-
-    
- }
+  }
 
   this.keyDown = function(e)
   {
@@ -267,8 +293,7 @@ var Juego = function() {
 
     if(e.keyCode === 13)
     {
-      this.tank.x = 500;
-      this.tank.y = 500;
+     this.start();
     }
   }
 
@@ -296,11 +321,13 @@ var Juego = function() {
 
 }
 
-$(document).ready(function()
+$(window).load(function()
 {
    var testGame = new Juego();
    testGame.constructor('game','fps','box-a','box-b','box-c','box-d');
-   testGame.start();
+   
+   console.log("press enter  to play");
+    
    $(document).keydown(function(e)
    {
       testGame.keyDown(e);

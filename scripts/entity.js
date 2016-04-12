@@ -42,9 +42,7 @@ var Entity = function(){
 	}
 
 	this.draw = function(ctx){
-		ctx.webkitImageSmoothingEnabled = false;
-		ctx.mozImageSmoothingEnabled = false;
-		ctx.imageSmoothingEnabled = false; /// future
+	
 		ctx.drawImage(this.sprite, this.canvasX, this.canvasY, this.canvasWidth, this.canvasHeight, this.x, this.y, this.width, this.height);
 	} 
 

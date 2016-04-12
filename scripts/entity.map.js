@@ -10,21 +10,13 @@ var Map = function (){
 	this.constructor = function(game,map){
 		this.game = game;
 		this.mapName = map;
-		this.getMap();
+		this.setMap();
 		this.arrayOfEntitiesTiles();
 	}
 
-	this.getMap = function(){
-	    $.ajax({
-	        type: 'GET',
-	        url: this.fileRoot+this.mapName,
-	        dataType: 'json',
-	        context: this,
-	        complete: function(response) {
-	           this.map = eval('(' + response.responseText + ')');
-	        },
-	        async: false
-	    });
+	this.setMap = function(){
+		this.map = map01;
+		
 	}
 
 	this.arrayOfEntitiesTiles = function(){
