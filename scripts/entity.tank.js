@@ -117,6 +117,7 @@ var Tank = function(){
 	}
 
 	this.collision = function(other){
+		
 		return this.entityCollision(this.selfByOrientation,other);
 	}
 

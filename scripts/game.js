@@ -77,6 +77,7 @@ var Juego = function() {
         this.arrayOfEntities.push(enemy);
         this.enemyCant--;
       }else {
+         console.log(this.arrayOfEntities);
         clearInterval(makeEnemies);
       }
     };
@@ -101,6 +102,17 @@ var Juego = function() {
          return filterByType(element,type)
       });
       return filtered;
+  }
+
+  this.gameCollision = function(entity){
+    var entities = this.arrayOfEntities;
+    for(var i = 0; i < entities.length; ++i){
+        if(typeof entities[i].collision == 'function'){
+           if(entities[i].collision(entity)){
+              return true;
+           }
+        }
+    }
   }
 
   this.checkCollisionWithTile = function(entity) {
@@ -161,6 +173,7 @@ var Juego = function() {
     for(var i = 0; i < this.enemies.length; ++i){
       this.enemies[i].autoMove();
     }
+
 
     this.deleteEntitiesFromGame();
   }
