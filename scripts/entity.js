@@ -12,6 +12,7 @@ var Entity = function(){
 	this.canvasWidth;
 	this.canvasHeight;
 	this.spriteObj;
+	this.id;
 
 
 	this.entityContructor = function(posX, posY, width, height, type, spt){
@@ -20,6 +21,7 @@ var Entity = function(){
 		this.width = width;
 		this.height = height;
 		this.type = type;
+		this.id = this.guid();
 
 		var newimg = new Image();
 		newimg.src = spt.img;
@@ -47,20 +49,24 @@ var Entity = function(){
 	} 
 
 	this.entityCollision = function(one,other){
-		if (one.x + one.width < other.x) {
-            return false;
-        }
-        if (one.y + one.height < other.y) {
-            return false;
-        }
-        if (one.x > other.x + other.width) {
-            return false;
-        }
-        if (one.y > other.y + other.height) {
-            return false;
-        }
-        return true;
+		if(one && other){
+			if (one.x + one.width < other.x) {
+	            return false;
+	        }
+	        if (one.y + one.height < other.y) {
+	            return false;
+	        }
+	        if (one.x > other.x + other.width) {
+	            return false;
+	        }
+	        if (one.y > other.y + other.height) {
+	            return false;
+	        }
+        	return true;
+		}
 	};
 
 
 }
+
+Entity.prototype = new Helper();

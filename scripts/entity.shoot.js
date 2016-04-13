@@ -12,11 +12,12 @@ var Shoot = function(){
 	this.parseY;
 	this.explosion;
 
-	this.constructor = function (game,posX,posY,orientation) {
+	this.constructor = function (game,posX,posY,orientation,id) {
 		this.shootOrientation = orientation;
 		this.setSprite();
 		this.setVelocityByOrientation(posX,posY);
 		this.entityContructor(this.parseX,this.parseY, this.width,this.height,3,this.sprite);
+		this.id = id;
 		this.game = game;
 	}
 
@@ -25,29 +26,32 @@ var Shoot = function(){
 	this.move = function(delta){
 		
 		this.setSelfObj(this.x+13,this.y+13,this.width-25,this.height-25);
-
-		if(this.y < -100 || this.y > this.game.canvas.height  || this.x < 0 || this.x > this.game.canvas.width){
+		if(this.selfByOrientation.y < -100 || this.selfByOrientation.y > this.game.canvas.height  || this.selfByOrientation.x <= 0 || this.selfByOrientation.x > this.game.canvas.width){
 			this.game.entitiesToDelete.push(this);
 			return;
 		}
-		var tile  = this.game.checkCollisionWithTile(this);
+		var colideEntity  = this.game.checkCollision(this);
+		var parent = this.game.filterEntities('id',this.id)[0];
+		
+		
+		if(colideEntity && colideEntity.typeTile !== 4 && parent.id !== colideEntity.id && parent.type !== colideEntity.type){
 
+			// if(colideEntity.typeTile === 3 || colideEntity.type === 1 ){ //shoot hawk end game
+			// 	this.game.endGame();
+			// }
 
-		if(tile && tile.typeTile != 4 ){
-
-			if(tile.typeTile === 3){ //shoot hawk end game
-				this.game.endGame();
-			}
-				console.log(tile);
-			if(tile.hitTile(this.hitPower)){
-				this.game.entitiesToDelete.push(tile);
-			}
+			if(typeof colideEntity.setHit == 'function'){
+				if(colideEntity.setHit(this.hitPower)){
+					this.game.entitiesToDelete.push(colideEntity);
+				}	
+			}	
 
 			this.used = true;
 			this.explosion = new Explosion();
 			this.explosion.constructor(this.game,this.x ,this.y );
 			this.game.arrayOfEntities.push(this.explosion);
 			this.game.entitiesToDelete.push(this);
+
 			return;
 		}
 

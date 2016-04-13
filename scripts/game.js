@@ -31,7 +31,8 @@ var Juego = function() {
   this.player;
   this.map;
   this.enemies = [];
-  this.enemyCant = 5;
+  this.enemyCant = 1;
+  this.spanEnemy = 1500;
 
   this.pressKeyLeft = false;
   this.pressKeyRight= false;
@@ -60,28 +61,45 @@ var Juego = function() {
     this.map.constructor(this,'map-01.json');
 
     var mkEnemies = function(){
-      if(this.enemyCant > 0){
-        var pos = [[10,10],[302,10],[740,10]];
-        var rand = Math.round(Math.random()*3);
-        var x = pos[0][0];
-        var y = pos[0][1];
-        if(pos[rand] && pos[rand][0]){
-          x = pos[rand][0];
-        }
-        if(pos[rand] && pos[rand][1]){
-          y = pos[rand][1];
-        }
+      if( this.running && this.started ){
+        if(this.enemyCant > 0){
+          
+          var cord = function(){
+              var pos = [[10,10],[740,10]];
+              var rand = Math.round(Math.random()*pos.length);
+              var x = pos[0][0];
+              var y = pos[0][1];
+              if(pos[rand] && pos[rand][0]){
+                x = pos[rand][0];
+              }
+              if(pos[rand] && pos[rand][1]){
+                y = pos[rand][1];
+              }
+              return {
+                x:x,
+                y:y
+              }
+          }
 
-        var enemy = new Enemy(this, x, y,'./assets/sprites/redtank.png',2,'bottom');
-        this.enemies.push(enemy);
-        this.arrayOfEntities.push(enemy);
-        this.enemyCant--;
-      }else {
-         console.log(this.arrayOfEntities);
-        clearInterval(makeEnemies);
+          var randCords = cord();
+          var enemy = new Enemy(this, randCords.x, randCords.y,'./assets/sprites/redtank.png',2,'bottom');
+
+          if(this.enemies.length > 0){
+            if( this.gameCollision(enemy)){
+              return;
+            }
+          }
+          this.enemies.push(enemy);
+          this.arrayOfEntities.push(enemy);
+          this.enemyCant--;
+
+        }else {
+          clearInterval(makeEnemies);
+        }
       }
     };
-    var makeEnemies = setInterval(mkEnemies.bind(this), 6500);
+    
+    var makeEnemies = setInterval(mkEnemies.bind(this), this.spanEnemy);
     setTimeout(mkEnemies.bind(this),100);
 
     var tiles = this.map.arrTiles;
@@ -94,12 +112,12 @@ var Juego = function() {
 
   }
 
-  this.getEntitiesByType = function(type){
+  this.filterEntities = function(key,vaL){
       function filterByType(value,type) {
-         return value.type == type;
+         return value[key] == vaL;
       }
       var filtered = this.arrayOfEntities.filter(function(element){
-         return filterByType(element,type)
+         return filterByType(element,vaL)
       });
       return filtered;
   }
@@ -115,17 +133,16 @@ var Juego = function() {
     }
   }
 
-  this.checkCollisionWithTile = function(entity) {
-
-    var tiles = this.getEntitiesByType(0);
-    for(var i=0;i < tiles.length; ++i)
+  this.checkCollision = function(entity) {
+    var other = this.filterEntities("allowWalk",false);
+    for(var i=0;i < other.length; ++i)
     {
-      if(!tiles[i].allowWalk)
+      if( entity.id != other[i].id)
       {
-        if(entity.collision(tiles[i]))
+        if(entity.collision(other[i]))
         {
-
-          return tiles[i];
+        
+          return other[i];
         }
       }
     }
@@ -134,9 +151,10 @@ var Juego = function() {
 
   this.endGame = function (){
    setTimeout(function(){
-      this.stop();  
+      this.stop(); 
+      console.log("GAME OVER"); 
       return; 
-   }.bind(this),1000);
+   }.bind(this),200);
   }
 
   this.deleteEntitiesFromGame = function()
@@ -161,6 +179,8 @@ var Juego = function() {
   }
 
   this.update = function(delta) {
+    this.deleteEntitiesFromGame();
+
     for(var i = 0; i < this.arrayOfEntities.length; ++i) {
       if(typeof this.arrayOfEntities[i].move == 'function')
       {
@@ -174,8 +194,7 @@ var Juego = function() {
       this.enemies[i].autoMove();
     }
 
-
-    this.deleteEntitiesFromGame();
+   
   }
 
   this.draw = function() {

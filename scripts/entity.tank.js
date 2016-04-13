@@ -10,8 +10,8 @@ var Tank = function(){
 	this.intervalShoot = 500;
 	this.lastShoot;
 	this.colide = false;
+	this.allowWalk = false;
 	
-
 
 	this.constructor = function(game, posX, posY,img,type,orientation){
 		this.game = game;
@@ -36,9 +36,7 @@ var Tank = function(){
 			height:h
 		}
 	}
-
 	
-
 	this.spritePosByOrientation = function(){
 		return {
 			'top':{
@@ -101,16 +99,20 @@ var Tank = function(){
 		}
 		this.lastShoot = dateTime;
 		var shoot = new Shoot();
-
-		shoot.constructor(this.game,this.x,this.y,this.orientation);
+		shoot.constructor(this.game,this.x,this.y,this.orientation,this.id);
 		this.game.arrayOfEntities.push(shoot);
+	}
+
+	this.setHit = function (hit){
+		
+		return true;
 	}
 
 	this.showRatio = function(){
 		if(this.selfByOrientation){
 			var ctx = this.game.ctx;
 			ctx.beginPath();
-			ctx.strokeStyle = "red";
+			ctx.strokeStyle = "yellow";
 			ctx.rect(this.selfByOrientation.x,this.selfByOrientation.y,this.selfByOrientation.width,this.selfByOrientation.height);
 			ctx.stroke();
 		}
@@ -147,7 +149,6 @@ var Tank = function(){
 			this.colide = true;
 			return this.colide;
 		}
-
 		
 		
 		this.entityMove(delta);

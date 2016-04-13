@@ -33,7 +33,7 @@ var Tile = function(){
         return this.endurance;
     }
 
-    this.hitTile = function(hitPower){
+    this.setHit = function(hitPower){
 
         var endurance =  this.getEndurance();
 

@@ -9,28 +9,28 @@ var Player = function (game,x,y,img,type,orientation){
 	    if(!this.game.pressKeyLeft && !this.game.pressKeyRight && !this.game.pressKeyDown && this.game.pressKeyTop)
 	    {
 	      this.setOrientation('top');
-	      if(!this.game.checkCollisionWithTile(this))
+	      if(!this.game.checkCollision(this))
 	      {
 	        this.setVelocityVertical(-this.velocityOfmoving);
 	      }
 	    }else if(!this.game.pressKeyLeft && !this.game.pressKeyRight && !this.game.pressKeyTop && this.game.pressKeyDown)
 	    {
 	      this.setOrientation('bottom');
-	      if(!this.game.checkCollisionWithTile(this))
+	      if(!this.game.checkCollision(this))
 	      {
 	        this.setVelocityVertical(this.velocityOfmoving);
 	      }
 	    }else if(this.game.pressKeyLeft && !this.game.pressKeyRight && !this.game.pressKeyTop && !this.game.pressKeyDown)
 	    {
 	      this.setOrientation('left');
-	      if(!this.game.checkCollisionWithTile(this))
+	      if(!this.game.checkCollision(this))
 	      {
 	        this.setVelocityHorizontal(-this.velocityOfmoving);
 	      }
 	    }else if(!this.game.pressKeyLeft && !this.game.pressKeyTop && !this.game.pressKeyDown && this.game.pressKeyRight)
 	    {
 	      this.setOrientation('right');
-	      if(!this.game.checkCollisionWithTile(this))
+	      if(!this.game.checkCollision(this))
 	      {
 	        this.setVelocityHorizontal(this.velocityOfmoving);
 	      }
